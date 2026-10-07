@@ -1,10 +1,9 @@
-HTML
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VOICE-LOCK 통합 공정·품질 관제 대시보드</title>
+  <title>VOICE-LOCK 시공사 통합 관제 대시보드</title>
   <style>
     :root {
       --rebar: #1D4ED8; --mep: #D97706; --formwork: #EA580C; --qc: #15803D;
@@ -14,42 +13,49 @@ HTML
     body { font-family: -apple-system, BlinkMacSystemFont, "Pretendard", Roboto, sans-serif; background: var(--bg); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
 
     aside { width: 250px; background: #0F172A; color: white; padding: 24px 16px; display: flex; flex-direction: column; justify-content: space-between; }
-    .brand { font-size: 18px; font-weight: 800; margin-bottom: 30px; display: flex; align-items: center; gap: 8px; }
+    .brand { font-size: 18px; font-weight: 800; margin-bottom: 24px; display: flex; align-items: center; gap: 8px; }
     .brand span { background: #2563EB; padding: 3px 8px; border-radius: 6px; font-size: 11px; }
-    .menu-item { padding: 12px 14px; border-radius: 8px; font-size: 14px; font-weight: 600; color: #94A3B8; cursor: pointer; margin-bottom: 6px; display: flex; align-items: center; gap: 10px; transition: 0.2s; text-decoration: none; }
+    
+    .menu-group { margin-bottom: 20px; }
+    .menu-group-title { font-size: 11px; text-transform: uppercase; color: #64748B; font-weight: 700; margin-bottom: 8px; padding-left: 12px; }
+    .menu-item { padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; color: #94A3B8; cursor: pointer; margin-bottom: 4px; display: flex; align-items: center; gap: 10px; transition: 0.2s; text-decoration: none; }
     .menu-item:hover, .menu-item.active { background: #1E293B; color: white; }
+    .menu-item.trade-link { font-size: 12px; }
 
     main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 24px 30px; }
-    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     header h2 { font-size: 22px; font-weight: 800; }
-    .header-actions { display: flex; align-items: center; gap: 12px; }
-    .btn-worker-link { text-decoration: none; background: #2563EB; color: white; padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(37,99,235,0.3); }
+    .header-controls { display: flex; align-items: center; gap: 10px; }
+    .zone-select { padding: 8px 14px; border-radius: 8px; border: 1px solid #CBD5E1; background: white; font-weight: 700; font-size: 14px; color: #1E293B; cursor: pointer; outline: none; }
     .refresh-badge { background: #DCFCE7; color: #15803D; font-size: 12px; font-weight: 700; padding: 8px 12px; border-radius: 8px; display: flex; align-items: center; gap: 6px; }
 
-    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-    .stat-card { background: white; border-radius: 12px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border-top: 4px solid; }
+    /* 상단 공종별 원클릭 바로가기 카드 */
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+    .stat-card { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border-top: 4px solid; text-decoration: none; color: inherit; transition: transform 0.15s; }
+    .stat-card:hover { transform: translateY(-2px); }
     .stat-card.rebar { border-color: var(--rebar); }
     .stat-card.mep { border-color: var(--mep); }
     .stat-card.formwork { border-color: var(--formwork); }
     .stat-card.qc { border-color: var(--qc); }
-    .stat-title { font-size: 13px; color: var(--text-sub); font-weight: 700; margin-bottom: 8px; }
-    .stat-val { font-size: 24px; font-weight: 800; display: flex; justify-content: space-between; align-items: baseline; }
+    .stat-title { font-size: 13px; color: var(--text-sub); font-weight: 700; margin-bottom: 6px; display: flex; justify-content: space-between; }
+    .stat-val { font-size: 22px; font-weight: 800; }
+    .stat-link-hint { font-size: 11px; color: #2563EB; margin-top: 6px; font-weight: 600; }
 
-    .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1; }
+    .content-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 20px; flex: 1; }
     .section-card { background: white; border-radius: 14px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); display: flex; flex-direction: column; }
     .section-title { font-size: 16px; font-weight: 800; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
 
     table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th { text-align: left; padding: 10px 12px; color: var(--text-sub); border-bottom: 1px solid #E2E8F0; font-weight: 700; }
-    td { padding: 14px 12px; border-bottom: 1px solid #F1F5F9; }
+    td { padding: 12px 12px; border-bottom: 1px solid #F1F5F9; }
     .tag { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
     .tag.done { background: #DCFCE7; color: #15803D; }
     .tag.wait { background: #F1F5F9; color: #94A3B8; }
     .btn-approve { padding: 6px 12px; background: #15803D; color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
     .btn-approve:disabled { background: #CBD5E1; cursor: not-allowed; }
 
-    .feed-list { overflow-y: auto; flex: 1; max-height: 520px; }
-    .feed-card { border: 1px solid #E2E8F0; border-radius: 10px; padding: 14px; margin-bottom: 12px; position: relative; border-left: 5px solid; }
+    .feed-list { overflow-y: auto; flex: 1; max-height: 500px; }
+    .feed-card { border: 1px solid #E2E8F0; border-radius: 10px; padding: 14px; margin-bottom: 12px; border-left: 5px solid; }
     .feed-card.rebar { border-left-color: var(--rebar); }
     .feed-card.mep { border-left-color: var(--mep); }
     .feed-card.formwork { border-left-color: var(--formwork); }
@@ -58,7 +64,7 @@ HTML
     .raw-audio { background: #F8FAFC; border-radius: 6px; padding: 8px 10px; font-size: 13px; color: #334155; margin: 8px 0; border: 1px dashed #CBD5E1; }
     .spec-summary { font-size: 13px; font-weight: 600; color: #0F172A; line-height: 1.4; }
 
-    /* QR 인쇄 팝업 모달 */
+    /* QR 팝업 모달 */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 999; justify-content: center; align-items: center; }
     .modal-content { background: white; width: 850px; max-height: 90vh; border-radius: 16px; padding: 26px; overflow-y: auto; }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
@@ -73,74 +79,88 @@ HTML
   <aside>
     <div>
       <div class="brand">VOICE-LOCK <span>시공사 관제</span></div>
-      <div class="menu-item active">📊 통합 공정 현황</div>
-      <div class="menu-item" onclick="openQrModal()">🖨️ QR 코드 인쇄 및 발급</div>
-      <a href="index.html" class="menu-item">📱 반장님 녹음 모바일창</a>
-      <div class="menu-item" onclick="clearData()">🗑️ 피드 기록 초기화</div>
+      
+      <div class="menu-group">
+        <div class="menu-group-title">공정 현황</div>
+        <div class="menu-item active">📊 전체 통합 현황판</div>
+        <div class="menu-item" onclick="openQrModal()">🖨️ 현장 부착 QR 인쇄</div>
+        <div class="menu-item" onclick="clearData()">🗑️ 피드 기록 초기화</div>
+      </div>
+
+      <div class="menu-group">
+        <div class="menu-group-title">공종별 녹음화면 이동</div>
+        <a id="linkRebar" href="index.html?trade=rebar&color=blue" class="menu-item trade-link">🟦 철근팀 녹음창 열기</a>
+        <a id="linkMep" href="index.html?trade=mep&color=yellow" class="menu-item trade-link">🟨 설비팀 녹음창 열기</a>
+        <a id="linkForm" href="index.html?trade=formwork&color=orange" class="menu-item trade-link">🟧 형틀팀 녹음창 열기</a>
+      </div>
     </div>
+    
     <div style="font-size: 12px; color: #64748B;">
-      로그인: 김철수 기사 (공사부)<br>
-      시스템: 실시간 동기화 활성
+      현장책임: 김철수 기사 (공사부)<br>
+      공정 동기화: 실시간 자동 연동
     </div>
   </aside>
 
   <main>
     <header>
       <div>
-        <h2>103동 3층 골조공사 통합 관제 현황</h2>
-        <span style="font-size: 13px; color: #64748B;">반장님이 QR을 스캔하고 녹음한 내용이 실시간 자동 반영됩니다.</span>
+        <h2 id="currentZoneTitle">103동 3층 골조공사 통합 관제</h2>
+        <span style="font-size: 13px; color: #64748B;">각 공종별 QR 스캔 음성 보고가 실시간으로 수집·정제됩니다.</span>
       </div>
-      <div class="header-actions">
-        <!-- 반장님 녹음 화면으로 바로가기 버튼 -->
-        <a href="index.html" class="btn-worker-link">📱 반장님 녹음창 열기 ➔</a>
+      <div class="header-controls">
+        <!-- 동/층 전환 드롭다운 -->
+        <select class="zone-select" id="zoneSelector" onchange="changeZone()">
+          <option value="103동 3층">🏢 103동 3층 (타설 D-Day)</option>
+          <option value="103동 4층">🏢 103동 4층 (철근 배근 진행중)</option>
+          <option value="104동 지하1층">🏢 104동 B1층 (기초 및 배관)</option>
+        </select>
         <div class="refresh-badge">● 실시간 연동 중</div>
       </div>
     </header>
 
+    <!-- 공종별 클릭 시 해당 녹음창으로 즉시 이동 가능한 상단 카드 -->
     <div class="stats-grid">
-      <div class="stat-card rebar">
-        <div class="stat-title">🟦 철근 (REBAR)</div>
+      <a id="cardRebar" href="index.html?trade=rebar&color=blue" class="stat-card rebar">
+        <div class="stat-title">🟦 철근 (REBAR) <span>녹음 ➔</span></div>
         <div class="stat-val" id="statRebar">0 건</div>
-      </div>
-      <div class="stat-card mep">
-        <div class="stat-title">🟨 설비 (MEP)</div>
+        <div class="stat-link-hint">클릭하여 철근 녹음 테스트</div>
+      </a>
+      <a id="cardMep" href="index.html?trade=mep&color=yellow" class="stat-card mep">
+        <div class="stat-title">🟨 설비 (MEP) <span>녹음 ➔</span></div>
         <div class="stat-val" id="statMep">0 건</div>
-      </div>
-      <div class="stat-card formwork">
-        <div class="stat-title">🟧 형틀 (FORMWORK)</div>
+        <div class="stat-link-hint">클릭하여 설비 녹음 테스트</div>
+      </a>
+      <a id="cardForm" href="index.html?trade=formwork&color=orange" class="stat-card formwork">
+        <div class="stat-title">🟧 형틀 (FORMWORK) <span>녹음 ➔</span></div>
         <div class="stat-val" id="statForm">0 건</div>
-      </div>
+        <div class="stat-link-hint">클릭하여 형틀 녹음 테스트</div>
+      </a>
       <div class="stat-card qc">
-        <div class="stat-title">🟩 타설 승인 게이트</div>
+        <div class="stat-title">🟩 타설 락(Lock) 해제</div>
         <div class="stat-val" id="statQc">준비중</div>
+        <div style="font-size:11px; color:#64748B; margin-top:6px;">3개 공종 완료 시 자동 해제</div>
       </div>
     </div>
 
     <div class="content-grid">
-      <!-- 부재별 릴레이 잠금 현황 -->
+      <!-- 부재별 릴레이 잠금 매트릭스 -->
       <div class="section-card">
         <div class="section-title">
-          <span>부재별 공정 릴레이 락(Lock)</span>
-          <span style="font-size: 12px; color: #64748B;">3개 공종 완료 시 타설 해제</span>
+          <span id="matrixTitle">부재별 공정 릴레이 락(Lock)</span>
+          <span style="font-size: 12px; color: #64748B;">모든 공종 완료 시 [타설 승인] 활성화</span>
         </div>
         <table>
           <thead>
             <tr>
-              <th>부재명</th>
-              <th>철근</th>
-              <th>설비</th>
-              <th>형틀</th>
+              <th>부재 번호</th>
+              <th>철근 (Blue)</th>
+              <th>설비 (Yellow)</th>
+              <th>형틀 (Orange)</th>
               <th>타설 허가</th>
             </tr>
           </thead>
           <tbody id="matrixTable">
-            <tr>
-              <td><strong>3F C1 기둥</strong></td>
-              <td id="c1-rebar"><span class="tag wait">대기</span></td>
-              <td id="c1-mep"><span class="tag wait">대기</span></td>
-              <td id="c1-formwork"><span class="tag wait">대기</span></td>
-              <td><button class="btn-approve" id="c1-btn" disabled>🔒 타설 잠김</button></td>
-            </tr>
+            <!-- JS 동적 생성 -->
           </tbody>
         </table>
       </div>
@@ -160,11 +180,11 @@ HTML
     </div>
   </main>
 
-  <!-- QR 코드 인쇄 팝업 모달 -->
+  <!-- QR 코드 모달 -->
   <div class="modal-overlay" id="qrModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3>현장 부착용 공종별 컬러 QR 스티커</h3>
+        <h3 id="qrModalTitle">공종별 컬러 QR 스티커</h3>
         <div>
           <button class="btn-print" onclick="window.print()">인쇄하기 (A4)</button>
           <button class="btn-close" onclick="closeQrModal()">닫기</button>
@@ -175,29 +195,63 @@ HTML
   </div>
 
   <script>
+    let currentSelectedZone = "103동 3층";
+
+    // 동/층별 샘플 부재 목록
+    const zoneElements = {
+      "103동 3층": ["C1 기둥", "C2 기둥", "G1 보", "S1 슬래브"],
+      "103동 4층": ["C1 기둥", "C2 기둥", "W1 벽체"],
+      "104동 지하1층": ["B1 기초매트", "B1 집수정", "B1 정화조 슬리브"]
+    };
+
+    function updateNavLinks() {
+      const zone = encodeURIComponent(currentSelectedZone);
+      const rebarUrl = `index.html?trade=rebar&color=blue&zone=${zone}&elem=C1 기둥`;
+      const mepUrl = `index.html?trade=mep&color=yellow&zone=${zone}&elem=C1 기둥`;
+      const formUrl = `index.html?trade=formwork&color=orange&zone=${zone}&elem=C1 기둥`;
+
+      document.getElementById('linkRebar').href = rebarUrl;
+      document.getElementById('linkMep').href = mepUrl;
+      document.getElementById('linkForm').href = formUrl;
+
+      document.getElementById('cardRebar').href = rebarUrl;
+      document.getElementById('cardMep').href = mepUrl;
+      document.getElementById('cardForm').href = formUrl;
+    }
+
+    function changeZone() {
+      currentSelectedZone = document.getElementById('zoneSelector').value;
+      document.getElementById('currentZoneTitle').innerText = `${currentSelectedZone} 골조공사 통합 관제`;
+      updateNavLinks();
+      renderDashboard();
+    }
+
     function openQrModal() {
       const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1) + 'index.html';
       const container = document.getElementById('qrContainer');
+      const z = encodeURIComponent(currentSelectedZone);
+      
+      document.getElementById('qrModalTitle').innerText = `[${currentSelectedZone}] 부착용 공종별 컬러 QR 스티커`;
       container.innerHTML = `
         <div class="qr-card" style="border-color:#1D4ED8;">
           <h4 style="color:#1D4ED8;">🟦 철근 공종 (REBAR)</h4>
-          <p style="font-size:12px; color:#64748B; margin:4px 0 8px;">103동 3층 A구역 (C1 기둥)</p>
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=${encodeURIComponent(baseUrl + '?trade=rebar&color=blue&zone=103동 3층 A구역&elem=C1 기둥')}&color=1D4ED8">
+          <p style="font-size:12px; color:#64748B; margin:4px 0 8px;">${currentSelectedZone} (C1 기둥)</p>
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=${encodeURIComponent(baseUrl + `?trade=rebar&color=blue&zone=${z}&elem=C1 기둥`)}&color=1D4ED8">
         </div>
         <div class="qr-card" style="border-color:#D97706;">
           <h4 style="color:#D97706;">🟨 설비 공종 (MEP)</h4>
-          <p style="font-size:12px; color:#64748B; margin:4px 0 8px;">103동 3층 A구역 (C1 기둥)</p>
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=${encodeURIComponent(baseUrl + '?trade=mep&color=yellow&zone=103동 3층 A구역&elem=C1 기둥')}&color=D97706">
+          <p style="font-size:12px; color:#64748B; margin:4px 0 8px;">${currentSelectedZone} (C1 기둥)</p>
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=${encodeURIComponent(baseUrl + `?trade=mep&color=yellow&zone=${z}&elem=C1 기둥`)}&color=D97706">
         </div>
         <div class="qr-card" style="border-color:#EA580C;">
           <h4 style="color:#EA580C;">🟧 형틀 공종 (FORMWORK)</h4>
-          <p style="font-size:12px; color:#64748B; margin:4px 0 8px;">103동 3층 A구역 (C1 기둥)</p>
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=${encodeURIComponent(baseUrl + '?trade=formwork&color=orange&zone=103동 3층 A구역&elem=C1 기둥')}&color=EA580C">
+          <p style="font-size:12px; color:#64748B; margin:4px 0 8px;">${currentSelectedZone} (C1 기둥)</p>
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=${encodeURIComponent(baseUrl + `?trade=formwork&color=orange&zone=${z}&elem=C1 기둥`)}&color=EA580C">
         </div>
         <div class="qr-card" style="border-color:#15803D;">
-          <h4 style="color:#15803D;">🟩 품질 승인 (CONCRETE QC)</h4>
-          <p style="font-size:12px; color:#64748B; margin:4px 0 8px;">103동 3층 A구역 (C1 기둥)</p>
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=${encodeURIComponent(baseUrl + '?trade=qc&color=green&zone=103동 3층 A구역&elem=C1 기둥')}&color=15803D">
+          <h4 style="color:#15803D;">🟩 품질 승인 (QC)</h4>
+          <p style="font-size:12px; color:#64748B; margin:4px 0 8px;">${currentSelectedZone} (C1 기둥)</p>
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=170x170&data=${encodeURIComponent(baseUrl + `?trade=qc&color=green&zone=${z}&elem=C1 기둥`)}&color=15803D">
         </div>
       `;
       document.getElementById('qrModal').style.display = 'flex';
@@ -208,55 +262,72 @@ HTML
     }
 
     function renderDashboard() {
-      const reports = JSON.parse(localStorage.getItem('voicelock_reports') || '[]');
+      const allReports = JSON.parse(localStorage.getItem('voicelock_reports') || '[]');
+      // 현재 선택된 동/층 데이터만 필터링
+      const reports = allReports.filter(r => r.zone.includes(currentSelectedZone));
+      
       const feedList = document.getElementById('feedList');
       document.getElementById('feedCount').innerText = `${reports.length}건 수신됨`;
 
       if (reports.length === 0) {
-        feedList.innerHTML = `<div style="text-align: center; color: #94A3B8; padding: 40px 0;">반장님이 QR을 찍고 녹음하면<br>여기에 시각과 원문, 시방서 변환 내용이 즉시 표시됩니다.</div>`;
-        return;
+        feedList.innerHTML = `<div style="text-align: center; color: #94A3B8; padding: 40px 0;">[${currentSelectedZone}] 수신된 보고가 없습니다.<br>상단 카드를 클릭해 직접 녹음을 테스트해보세요.</div>`;
+      } else {
+        feedList.innerHTML = '';
+        reports.forEach(item => {
+          const card = document.createElement('div');
+          card.className = `feed-card ${item.trade}`;
+          card.innerHTML = `
+            <div class="feed-header">
+              <span><strong>${item.author}</strong> (📍 ${item.zone} ${item.elem})</span>
+              <span class="feed-time">⏱ 녹음시각 ${item.time}</span>
+            </div>
+            <div class="raw-audio">🗣 <strong>반장 발화 원문:</strong> "${item.rawText}"</div>
+            <div class="spec-summary">📑 <strong>국토부 시방서 정제:</strong> ${item.summary}</div>
+          `;
+          feedList.appendChild(card);
+        });
       }
 
-      let rebarCount = 0, mepCount = 0, formCount = 0;
-      feedList.innerHTML = '';
-
-      reports.forEach(item => {
-        if (item.trade === 'rebar') rebarCount++;
-        if (item.trade === 'mep') mepCount++;
-        if (item.trade === 'formwork') formCount++;
-
-        const card = document.createElement('div');
-        card.className = `feed-card ${item.trade}`;
-        card.innerHTML = `
-          <div class="feed-header">
-            <span><strong>${item.author}</strong> (📍 ${item.zone} ${item.elem})</span>
-            <span class="feed-time">⏱ 녹음시각 ${item.time}</span>
-          </div>
-          <div class="raw-audio">🗣 <strong>반장 발화 원문:</strong> "${item.rawText}"</div>
-          <div class="spec-summary">📑 <strong>국토부 시방서 정제:</strong> ${item.summary}</div>
-        `;
-        feedList.appendChild(card);
-      });
+      // 공종별 건수 집계
+      const rebarCount = reports.filter(r => r.trade === 'rebar').length;
+      const mepCount = reports.filter(r => r.trade === 'mep').length;
+      const formCount = reports.filter(r => r.trade === 'formwork').length;
 
       document.getElementById('statRebar').innerText = `${rebarCount} 건`;
       document.getElementById('statMep').innerText = `${mepCount} 건`;
       document.getElementById('statForm').innerText = `${formCount} 건`;
 
-      const hasRebar = reports.some(r => r.trade === 'rebar');
-      const hasMep = reports.some(r => r.trade === 'mep');
-      const hasForm = reports.some(r => r.trade === 'formwork');
+      // 매트릭스 렌더링
+      const matrixTable = document.getElementById('matrixTable');
+      matrixTable.innerHTML = '';
+      const elems = zoneElements[currentSelectedZone] || ["C1 기둥"];
 
-      if (hasRebar) document.getElementById('c1-rebar').innerHTML = '<span class="tag done">✓ 완료</span>';
-      if (hasMep) document.getElementById('c1-mep').innerHTML = '<span class="tag done">✓ 완료</span>';
-      if (hasForm) document.getElementById('c1-formwork').innerHTML = '<span class="tag done">✓ 완료</span>';
+      let allApproved = false;
 
-      const btn = document.getElementById('c1-btn');
-      if (hasRebar && hasMep && hasForm) {
-        btn.disabled = false;
-        btn.innerText = "✅ 타설 승인 (해제)";
-        btn.onclick = () => alert("103동 3층 C1 기둥 타설 승인 완료! 감리 보고서가 생성되었습니다.");
-        document.getElementById('statQc').innerText = "승인 가능";
-      }
+      elems.forEach((elemName, index) => {
+        const isRebar = reports.some(r => r.trade === 'rebar' && r.elem.includes(elemName));
+        const isMep = reports.some(r => r.trade === 'mep' && r.elem.includes(elemName));
+        const isForm = reports.some(r => r.trade === 'formwork' && r.elem.includes(elemName));
+
+        const canApprove = isRebar && isMep && isForm;
+        if (canApprove) allApproved = true;
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><strong>${elemName}</strong></td>
+          <td>${isRebar ? '<span class="tag done">✓ 완료</span>' : '<span class="tag wait">대기</span>'}</td>
+          <td>${isMep ? '<span class="tag done">✓ 완료</span>' : '<span class="tag wait">대기</span>'}</td>
+          <td>${isForm ? '<span class="tag done">✓ 완료</span>' : '<span class="tag wait">대기</span>'}</td>
+          <td>
+            <button class="btn-approve" ${canApprove ? '' : 'disabled'} onclick="alert('${currentSelectedZone} ${elemName} 타설 승인 완료! 감리 보고서가 생성되었습니다.')">
+              ${canApprove ? '✅ 타설 승인 (해제)' : '🔒 타설 잠김'}
+            </button>
+          </td>
+        `;
+        matrixTable.appendChild(row);
+      });
+
+      document.getElementById('statQc').innerText = allApproved ? "해제 가능" : "잠김";
     }
 
     function clearData() {
@@ -272,6 +343,7 @@ HTML
       }
     });
 
+    updateNavLinks();
     setInterval(renderDashboard, 1000);
     renderDashboard();
   </script>
